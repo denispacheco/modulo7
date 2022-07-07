@@ -79,8 +79,41 @@ cliente.query(consulta + ' ORDER BY "Autor"',function(err,res){
     }
     console.log("--------------------------------------");
 })
-
 //ejerccio 4.- consultar todos los libros con su autor y año de edición.
-//usando chalk, pintar los libros según su año: rojo antes de 1900,amarillo antes (o igual) del 2000, verde mayor al 2000
+//usando chalk, pintar los libros según su año: rojo antes de 1900,amarillo antes (o igual)del 2000, verde mayor al 2000
+const chalk = require('chalk');
+const consulta4='SELECT l."Nombre" AS "Libro",a."Nombre" AS "Autor",l."Edicion" FROM "Libros" l JOIN "Autores" a ON l."IdAutor"=a."Id" ORDER BY l."Edicion" '
+cliente.query(consulta4,function(err,res){
+   if(err){
+    console.log("Error:" + err.message);
+   }else{
+    res.rows.map(l=>{
+        let textoLibro=l.Libro + " - " + l.Autor + " - " +l.Edicion;
+        if(l.Edicion<=1900){
+            console.log(chalk.red(textoLibro));
+        }else if(l.Edicion<=2000){
+            console.log(chalk.yellow(textoLibro));
+        }else{
+            console.log(chalk.green(textoLibro));
+        }        
+    });
+   }
+   console.log("--------------------------------------");
+});
+cliente.query(consulta4,function(err,res){
+    if(err){
+        console.log("Error:"+err.message);
+    }else{
+        res.rows.filter(l=>l.Edicion<=1900).map(l=>console.log(chalk.red(l.Libro + " - " + l.Autor + " - " +l.Edicion)));
+        res.rows.filter(l=>l.Edicion<=2000 && l.Edicion>1900).map(l=>console.log(chalk.yellow(l.Libro + " - " + l.Autor + " - " +l.Edicion)));
+        res.rows.filter(l=>l.Edicion>200).map(l=>console.log(chalk.green(l.Libro + " - " + l.Autor + " - " +l.Edicion)));
+    }
+});
+
+
+
+
+
+
 
 
