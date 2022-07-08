@@ -70,8 +70,6 @@ pool.query(query5,function(err,res){
 })
 
 //ejercicios
-//ejercicio 1.- 
-//agregar un nuevo autor y 2 libros de su autoría.
 
 //ejercicio 2
 //obtener una lista donde se indique la cantidad de libros por género
@@ -83,3 +81,36 @@ pool.query(query_ej2,function(err,res){
         console.table(res.rows);
     }
 })
+
+
+//ejercicio 1.- 
+//agregar un nuevo autor y 2 libros de su autoría.
+//solucion alexis
+async function agregarAutor(id,Nombre,FechaNacimiento,Nacionalidad){
+    const query='INSERT INTO "Autores" VALUES ($1,$2,$3,$4)';
+    const parametros=[id,Nombre,FechaNacimiento,Nacionalidad];
+    let respuesta=await pool.query(query,parametros);
+    console.log("respuesta insert autor:" + respuesta);
+    console.log("----------------------------");
+}
+
+//const parametrose = [33,'Love Poems',700,1952,1,2,1,1];
+async function agregarLibro(id,nombre,paginas,edicion,idAutor,idEditorial,idGenero,idIdioma){
+    const query = 'INSERT INTO "Libros" VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
+    const parametros = [id,nombre,paginas,edicion,idAutor,idEditorial,idGenero,idIdioma];
+    let respuesta = await pool.query(query,parametros);
+    console.log("respuesta Insert Libro : "+ respuesta);
+    console.log("----------------------------");
+}
+
+async function ejecutar(){
+    try{
+        await agregarAutor(21,'Baldomero lillo','1867-01-06',"Chileno");
+        await agregarLibro(32,"Sub Terra",300,1904,21,5,4,1);
+        await agregarLibro(33,"Sub Sole",400,1907,21,5,4,1);
+    }catch(err){
+        console.log("error al insetar datos:" + err.message);
+    }    
+}
+
+ejecutar();
