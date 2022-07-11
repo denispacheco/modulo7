@@ -71,12 +71,12 @@ app.post("/transaccion/insert",async function(req,res){
     console.log(respuestaIdLibro.rows[0].Id);
     console.log(req.body);
     //query para insertar datos
-    const query1='INSERT INTO "Autores" VALUES ($1,\'$2\',\'1980-05-10\',\'$3\')'
-    const query2='INSERT INTO "Libros" VALUES ($1,\'$2\',$3,$4,$5,1,1,1)'
+    const query1='INSERT INTO "Autores" VALUES ($1,$2,$3,$4)';
+    const query2='INSERT INTO "Libros" VALUES ($1,$2,$3,$4,$5,1,1,1)';
     //ejecucion insert
     try {
         await pool.query("BEGIN")
-        await pool.query(query1,[respuestaIdAutor.rows[0].Id,req.body.autor,req.body.nacionalidad])
+        await pool.query(query1,[respuestaIdAutor.rows[0].Id,req.body.autor,req.body.nacimiento,req.body.nacionalidad])
         await pool.query(query2,[respuestaIdLibro.rows[0].Id,req.body.libro,req.body.paginas,req.body.edicion,respuestaIdAutor.rows[0].Id])
         await pool.query("COMMIT")
         res.send("Datos ingresados correctamente");
