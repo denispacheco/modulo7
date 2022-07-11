@@ -173,3 +173,7 @@ app.get('/bootstrap/libros',async function(req,res){
         res.end('error al buscar datos');
     }
 })
+
+
+//ejercicio 8.- generar en html, una lista de los prestamos existentes con un botón en la parte derecha para eliminar 
+//y otro para editar la fecha de devolucion.
