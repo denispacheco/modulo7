@@ -9,7 +9,7 @@ window.onload=function(){
         })
     }
 };
-
+//funcion para llamar al método DELETE del servidor.
 async function eliminar(id){
     let respuesta=await fetch("http://localhost:3000/prestamos/"+id,{
         method:"DELETE"
