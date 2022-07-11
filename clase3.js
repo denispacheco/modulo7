@@ -21,6 +21,8 @@ const configuracion={
 //inicializacion-----------------------------------------------------------
 const pool=new Pool(configuracion);
 const app = express()
+//generar la carpeta estatica
+app.use(express.static("public"));
 
 //rutas--------------------------------------------------------------------
 //obtener la lista de libros desde la bd
@@ -177,3 +179,53 @@ app.get('/bootstrap/libros',async function(req,res){
 
 //ejercicio 8.- generar en html, una lista de los prestamos existentes con un botón en la parte derecha para eliminar 
 //y otro para editar la fecha de devolucion.
+
+//funcion para taer la lista (documento html)
+app.get("/prestamos",async function(req,res){
+    //1.-crear la consulta (primero ejecutarla en pgAdmin)
+    let consulta='SELECT p."Id",u."Nombre" AS "Usuario",l."Nombre" AS "Libro", "FechaPrestamo", "FechaDevolucion"	FROM "Prestamo" p '
+    consulta+= 'JOIN "Usuario" u ON p."RutUsuario"=u."Rut" '
+    consulta+='JOIN "Libros" l ON p."idLibro"=l."Id" ORDER BY "FechaPrestamo"'
+    try {
+        //2.-ejecutar la consulta
+        const resultado=await pool.query(consulta);
+        //4.- leer el archivo html y modificarlo
+        let html=fs.readFileSync("html/ejercicio8.html").toString();
+        //5.- generar el contenido de la tabla html
+        let contenido='';
+        for (let i = 0; i < resultado.rows.length; i++) {            
+            contenido+='<tr id="d'+resultado.rows[i].Id+'">';
+            contenido+="<td>"+resultado.rows[i].Id+"</td>";
+            contenido+="<td>"+resultado.rows[i].Usuario+"</td>";
+            contenido+="<td>"+resultado.rows[i].Libro+"</td>";
+            contenido+="<td>"+resultado.rows[i].FechaPrestamo+"</td>";
+            contenido+="<td>"+resultado.rows[i].FechaDevolucion+"</td>";    
+            contenido+="<td><button>Eliminar</button></td>";
+            contenido+="</tr>";
+        }
+        html=html.replace("__contenido__",contenido);
+        //6.- enviar el html
+        res.send(html);
+
+
+    } catch (error) {
+        //3.- gestionar errores y enviar respuesta si es que los hay
+     console.log("error en la consulta");
+     console.log("Error:"+error.message);
+     res.status(500);
+     res.send("Error al cargar datos");
+    }
+})
+//funcion para eliminar
+app.delete("/prestamos/:id",async function(req,res){
+    const consulta='DELETE FROM "Prestamo" WHERE "Id"=$1';
+    try {
+        await pool.query(consulta,[req.params.id]);
+        res.json({status:"OK"});
+    } catch (error) {
+        console.log("error en la consulta");
+        console.log("Error:"+error.message);
+        res.status(500);
+        res.json({memsaje:"Error al eliminar"});
+    }
+})
